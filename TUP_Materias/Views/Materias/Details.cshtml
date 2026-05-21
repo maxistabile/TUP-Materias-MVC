@@ -1,0 +1,40 @@
+﻿@model TUP_Materias.Models.Materia
+
+@{
+    ViewData["Title"] = "Detalle de " + Model.Nombre;
+}
+
+<div class="container mt-4">
+    <div class="card shadow">
+        <div class="card-header bg-success text-white">
+            <h2>@Model.Nombre</h2>
+        </div>
+        <div class="card-body">
+            <h5 class="card-title">Profesor Asignado:</h5>
+            <p class="card-text fs-5">@Model.ProfesorAsignado.Nombre @Model.ProfesorAsignado.Apellido</p>
+
+            <hr />
+
+            <h5 class="mt-4">Alumnos Inscriptos (@Model.AlumnosInscriptos.Count):</h5>
+
+            @if (!Model.AlumnosInscriptos.Any())
+            {
+                <p class="text-muted">No hay alumnos anotados en esta materia.</p>
+            }
+            else
+            {
+                <ul class="list-group list-group-flush col-md-6">
+                    @foreach (var alumno in Model.AlumnosInscriptos)
+                    {
+                        <li class="list-group-flush list-group-item">
+                            <i class="bi bi-person-fill me-2"></i> @alumno.Apellido, @alumno.Nombre
+                        </li>
+                    }
+                </ul>
+            }
+        </div>
+        <div class="card-footer">
+            <a asp-action="Index" class="btn btn-secondary">Volver al Listado</a>
+        </div>
+    </div>
+</div>
