@@ -15,5 +15,16 @@ namespace TUP_Materias.Data
         public DbSet<Materia> Materias { get; set; }
         public DbSet<Profesor> Profesores { get; set; }
         public DbSet<Alumno> Alumnos { get; set; }
+        // 🔥 AGREGAMOS ESTE BLOQUE (Fluent API):
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+
+            // Le explicamos a EF Core la relación Muchos a Muchos explícita
+            modelBuilder.Entity<Materia>()
+                .HasMany(m => m.AlumnosInscriptos) // Una Materia tiene muchos AlumnosInscriptos
+                .WithMany(a => a.Materias)          // Un Alumno tiene muchas Materias
+                .UsingEntity(j => j.ToTable("AlumnoMateria")); // Nombre de la tabla intermedia real
+        }
     }
 }

@@ -15,6 +15,23 @@ namespace TUP_Materias.Migrations
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
+                name: "Alumnos",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    Nombre = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    Apellido = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4")
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Alumnos", x => x.Id);
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
+
+            migrationBuilder.CreateTable(
                 name: "Profesores",
                 columns: table => new
                 {
@@ -54,32 +71,34 @@ namespace TUP_Materias.Migrations
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
-                name: "Alumnos",
+                name: "AlumnoMateria",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
-                    Nombre = table.Column<string>(type: "longtext", nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    Apellido = table.Column<string>(type: "longtext", nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    MateriaId = table.Column<int>(type: "int", nullable: true)
+                    AlumnosInscriptosId = table.Column<int>(type: "int", nullable: false),
+                    MateriasId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Alumnos", x => x.Id);
+                    table.PrimaryKey("PK_AlumnoMateria", x => new { x.AlumnosInscriptosId, x.MateriasId });
                     table.ForeignKey(
-                        name: "FK_Alumnos_Materias_MateriaId",
-                        column: x => x.MateriaId,
+                        name: "FK_AlumnoMateria_Alumnos_AlumnosInscriptosId",
+                        column: x => x.AlumnosInscriptosId,
+                        principalTable: "Alumnos",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_AlumnoMateria_Materias_MateriasId",
+                        column: x => x.MateriasId,
                         principalTable: "Materias",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Alumnos_MateriaId",
-                table: "Alumnos",
-                column: "MateriaId");
+                name: "IX_AlumnoMateria_MateriasId",
+                table: "AlumnoMateria",
+                column: "MateriasId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Materias_ProfesorAsignadoId",
@@ -90,6 +109,9 @@ namespace TUP_Materias.Migrations
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropTable(
+                name: "AlumnoMateria");
+
             migrationBuilder.DropTable(
                 name: "Alumnos");
 

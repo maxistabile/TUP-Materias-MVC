@@ -21,6 +21,21 @@ namespace TUP_Materias.Migrations
 
             MySqlModelBuilderExtensions.AutoIncrementColumns(modelBuilder);
 
+            modelBuilder.Entity("AlumnoMateria", b =>
+                {
+                    b.Property<int>("AlumnosInscriptosId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("MateriasId")
+                        .HasColumnType("int");
+
+                    b.HasKey("AlumnosInscriptosId", "MateriasId");
+
+                    b.HasIndex("MateriasId");
+
+                    b.ToTable("AlumnoMateria", (string)null);
+                });
+
             modelBuilder.Entity("TUP_Materias.Models.Alumno", b =>
                 {
                     b.Property<int>("Id")
@@ -33,16 +48,11 @@ namespace TUP_Materias.Migrations
                         .IsRequired()
                         .HasColumnType("longtext");
 
-                    b.Property<int?>("MateriaId")
-                        .HasColumnType("int");
-
                     b.Property<string>("Nombre")
                         .IsRequired()
                         .HasColumnType("longtext");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("MateriaId");
 
                     b.ToTable("Alumnos");
                 });
@@ -90,11 +100,19 @@ namespace TUP_Materias.Migrations
                     b.ToTable("Profesores");
                 });
 
-            modelBuilder.Entity("TUP_Materias.Models.Alumno", b =>
+            modelBuilder.Entity("AlumnoMateria", b =>
                 {
+                    b.HasOne("TUP_Materias.Models.Alumno", null)
+                        .WithMany()
+                        .HasForeignKey("AlumnosInscriptosId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("TUP_Materias.Models.Materia", null)
-                        .WithMany("AlumnosInscriptos")
-                        .HasForeignKey("MateriaId");
+                        .WithMany()
+                        .HasForeignKey("MateriasId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("TUP_Materias.Models.Materia", b =>
@@ -106,11 +124,6 @@ namespace TUP_Materias.Migrations
                         .IsRequired();
 
                     b.Navigation("ProfesorAsignado");
-                });
-
-            modelBuilder.Entity("TUP_Materias.Models.Materia", b =>
-                {
-                    b.Navigation("AlumnosInscriptos");
                 });
 #pragma warning restore 612, 618
         }

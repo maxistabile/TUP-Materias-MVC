@@ -1,30 +1,55 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using TUP_Materias.Data; // Para poder usar el MockRepository
-using System.Linq;
+using Microsoft.EntityFrameworkCore; // ¡Importantísimo para el .Include()!
+using TUP_Materias.Data; // Para que reconozca tu ApplicationDbContext
 
 namespace TUP_Materias.Controllers
 {
     public class MateriasController : Controller
     {
-        // 1. Pantalla principal: Muestra el listado de todas las materias
-        public IActionResult Index()
+        // 1. Declaramos una variable privada y de solo lectura para nuestra base de datos
+        private readonly ApplicationDbContext _context;
+
+        // 2. El Constructor: .NET inyecta automáticamente la base de datos acá adentro
+        public MateriasController(ApplicationDbContext context)
         {
-            var listaDeMaterias = MockRepository.Materias;
-            return View(listaDeMaterias); // Le pasamos la lista a la Vista
+            _context = context;
         }
 
-        // 2. Pantalla de detalle: Recibe el ID de la materia por la URL (ej: /Materias/Details/1)
-        public IActionResult Details(int id)
+        // 3. La Acción Index: Trae las materias de la base de datos real
+        public IActionResult Index()
         {
-            // Buscamos la materia que coincida con el ID usando LINQ (como un SELECT en base de datos)
-            var materiaBuscada = MockRepository.Materias.FirstOrDefault(m => m.Id == id);
+            // Usamos Eager Loading (.Include) para traer el profesor y los alumnos asociados de cada materia
+            var listaMaterias = _context.Materias
+                                        .Include(m => m.ProfesorAsignado)
+                                        .Include(m => m.AlumnosInscriptos)
+                                        .ToList();
 
-            if (materiaBuscada == null)
+            return View(listaMaterias);
+        }
+        // 4. Acción Details: Muestra los datos de una sola materia por su ID
+        public IActionResult Details(int? id)
+        {
+            // Si no nos mandan un ID por la URL, devolvemos un error 404
+            if (id == null)
             {
-                return NotFound(); // Si ponen un ID que no existe, tira error 404
+                return NotFound();
             }
 
-            return View(materiaBuscada); // Le mandamos esa materia específica a la Vista
+            // Buscamos en la base de datos la materia que coincida con el ID
+            // Y le sumamos el Profesor y los Alumnos con Eager Loading
+            var materia = _context.Materias
+                                  .Include(m => m.ProfesorAsignado)
+                                  .Include(m => m.AlumnosInscriptos)
+                                  .FirstOrDefault(m => m.Id == id);
+
+            // Si la materia no existe en la base de datos, tiramos un 404
+            if (materia == null)
+            {
+                return NotFound();
+            }
+
+            // Si todo está bien, mandamos la materia con todos sus datos a la Vista
+            return View(materia);
         }
     }
 }
