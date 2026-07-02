@@ -3,8 +3,8 @@
     public class Materia
     {
         public int Id { get; set; }
-        public string Nombre { get; set; }
-        public Profesor ProfesorAsignado { get; set; }
-        public List<Alumno> AlumnosInscriptos { get; set; }
+        public string Nombre { get; set; } = string.Empty;
+        public Profesor ProfesorAsignado { get; set; } = new Profesor();
+        public List<Alumno> AlumnosInscriptos { get; set; } = new List<Alumno>();
     }
 }
